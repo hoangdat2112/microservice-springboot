@@ -1,17 +1,18 @@
-package com.example.product_service.model;
+package com.example.product_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "product")
-@Data//toString
+@Table(name = "products")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Product {
+//Event-driven approach with Spring Data JPA
+public class Product extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,8 +22,17 @@ public class Product {
 
     private Float price;
 
+    @Column(name = "thumbnail", length = 300)
+    private String thumbnail;
+
     @Column(name = "description")
     private String description;
+
+
+
+
+
+
 
 
 }

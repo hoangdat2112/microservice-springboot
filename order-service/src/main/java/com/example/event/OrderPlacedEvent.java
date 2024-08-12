@@ -1,4 +1,4 @@
-package com.example.order_service.event;
+package com.example.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

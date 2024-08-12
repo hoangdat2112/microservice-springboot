@@ -1,0 +1,36 @@
+server:
+ port: 9998
+
+spring:
+ kafka:
+  bootstrap-servers: localhost:9092
+  template:
+   default-topic: notificationTopic
+  consumer:
+   group-id: my-group-id
+   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+   value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+
+
+ mail:
+  host: smtp.gmail.com
+  port: 587
+  username: hyperlogy123@gmail.com
+  password: vpgo oypc xkfi bhmv
+  properties:
+   mail:
+    smtp:
+     auth: true
+     starttls:
+      enable: true
+     ssl:
+      enable: false
+
+
+eureka:
+ client:
+  service-url:
+   defaultZone: http://localhost:8761/eureka/
+

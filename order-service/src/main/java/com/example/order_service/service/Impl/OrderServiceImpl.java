@@ -1,8 +1,9 @@
 package com.example.order_service.service.Impl;
 
+import com.example.event.OrderPlacedEvent;
 import com.example.order_service.dto.OrderDTO;
 import com.example.order_service.dto.response.InventoryResponse;
-import com.example.order_service.event.OrderPlacedEvent;
+
 import com.example.order_service.mapper.OrderMapper;
 import com.example.order_service.model.Order;
 import com.example.order_service.repository.OrderRepository;
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
         }
         if(b){
             orderRepository.save(order);
-            kafkaTemplate.send("notificationTopic",new OrderPlacedEvent(order.getPrice()));
+            kafkaTemplate.send("notificationTopic",order.getEmail());
         }else{
             throw new IllegalArgumentException("Product is not in stock, please try again later");
         }

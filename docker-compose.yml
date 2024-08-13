@@ -21,3 +21,60 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+  mysql8-container:
+    container_name: mysql8-container
+    image: mysql:8.2.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: microservice
+    ports:
+      - 3307:3306
+    #volumes:
+    #- ./sql/shopapp.sql:/docker-entrypoint-initdb.d/init-script.sql
+    networks:
+      - microservice-network
+  redis-container:
+    image: docker.io/redis:7.2.3
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379" # Port mapping for Redis, you can change the host port as needed
+    volumes:
+      - ./redis-data:/data # Mount a volume for Redis data persistence
+    networks:
+      - microservice-network
+
+  apigateway-container:
+    container_name: apigateway-container
+    build:
+      context: .
+      dockerfile: DockerFileApiGateway
+      #docker tag <image_id> shopapp-spring:1.0.0
+    ports:
+      - 8099:8080
+    environment:
+      #SPRING_DATASOURCE_URL: jdbc:mysql://mysql8-container:3306/ShopApp?serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql8-container:3306/microservice?serverTimezone=UTC&allowPublicKeyRetrieval=true
+      MYSQL_ROOT_PASSWORD: 12345
+      REDIS_HOST: redis-container
+      REDIS_PORT: 6379
+
+    #depends_on only waits for the container to start, not for the service inside the container to be fully operational
+    depends_on:
+      - mysql8-container
+    networks:
+      - microservice-network
+  discoveryserver-container:
+    container_name: discoveryserver-container
+    build:
+      context: .
+      dockerfile: DockerFileDiscoveryServer
+      #docker tag <image_id> shopapp-spring:1.0.0
+    ports:
+      - 8761:8761
+    #depends_on only waits for the container to start, not for the service inside the container to be fully operational
+    depends_on:
+      - mysql8-container
+    networks:
+      - shopapp-network

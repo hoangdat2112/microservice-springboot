@@ -1,0 +1,26 @@
+# Chọn hình ảnh cơ sở chứa Maven và JDK
+FROM maven:3.9.8-amazoncorretto-17 AS build
+
+# Thiết lập thư mục làm việc trong container
+WORKDIR /app
+
+# Sao chép tệp pom.xml và các mã nguồn vào container
+COPY pom.xml .
+COPY src ./src
+
+# Tạo ứng dụng (build) trong container
+RUN mvn package -f /app/api-gateway/pom.xml
+
+FROM amazoncorretto:17.0.12
+
+WORKDIR /app
+
+
+# Sao chép tệp JAR từ container build vào container runtime
+COPY --from=build /app/target/*.jar app.jar
+
+# Chạy ứng dụng khi khởi động container
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Thông báo cổng mà ứng dụng sử dụng
+EXPOSE 8080
